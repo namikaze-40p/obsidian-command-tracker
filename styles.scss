@@ -1,0 +1,77 @@
+@use './node_modules/ag-grid-community/styles/ag-grid.min.css';
+@use './node_modules/ag-grid-community/styles/ag-theme-quartz.min.css';
+
+// Custom AG-Grid light theme
+body.theme-light .ag-theme-quartz {
+	--ag-foreground-color: #181d1f;
+	--ag-background-color: #fafafa;
+	--ag-header-foreground-color: #181d1f;
+	--ag-header-background-color: #181d1f05;
+	--ag-odd-row-background-color: rgb(0, 0, 0, 0.03);
+	--ag-header-column-resize-handle-color: #181d1f26;
+}
+
+// Custom AG-Grid dark theme
+body.theme-dark .ag-theme-quartz {
+	--ag-foreground-color: #fff;
+	--ag-background-color: #1f2b36;
+	--ag-header-foreground-color: #fff;
+	--ag-header-background-color: #2e3744;
+	--ag-odd-row-background-color: rgb(0, 0, 0, 0.2);
+	--ag-header-column-resize-handle-color: #ffffff26;
+}
+
+// For Command Tracker
+.ct-view-content {
+	padding: 1rem;
+
+	& .ct-first-line {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	& .ct-view-selector {
+		font-weight: bold;
+		width: max-content;
+		max-width: 100%;
+	}
+
+	& .ct-table {
+		height: 100%;
+		width: 100%;
+	}
+}
+
+body.is-phone .ct-view-content {
+
+	& .ct-view-selector {
+		width: 100%;
+	}
+
+	& .ct-table {
+		height: calc(100% - 240px);
+	}
+}
+
+.ct-settings {
+	& .ct-delete-input {
+		width: 5rem;
+		min-width: 5rem;
+	}
+
+	& .ct-delete-description {
+		margin-top: 1rem;
+		padding: 0.75rem 0;
+		border-top: 1px solid var(--background-modifier-border);
+
+		& > ul {
+			margin-top: 0.5rem;
+			padding-left: 1rem;
+		}
+
+		& li {
+			margin: 0.25rem 0;
+		}
+	}
+}
