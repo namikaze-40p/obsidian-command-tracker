@@ -1,7 +1,7 @@
 {
 	"id": "command-tracker",
 	"name": "Command Tracker",
-	"version": "0.1.4-beta.7",
+	"version": "0.1.4-beta.10",
 	"minAppVersion": "1.6.3",
 	"description": "Track the number of times the command is used.",
 	"author": "namikaze-40p",
