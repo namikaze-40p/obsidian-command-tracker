@@ -44,13 +44,18 @@ body.theme-dark .ag-theme-quartz {
 }
 
 body.is-phone .ct-view-content {
+	overflow-y: scroll;
 
 	& .ct-view-selector {
 		width: 100%;
 	}
 
 	& .ct-table {
-		height: calc(100% - 240px);
+		margin-bottom: 74px;
+
+		& .ag-root-wrapper {
+			height: calc(100vh - (74px + 2rem));
+		}
 	}
 }
 
