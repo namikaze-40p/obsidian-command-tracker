@@ -39,6 +39,7 @@ export class SettingTab extends PluginSettingTab {
 		super(app, plugin);
 		this.plugin = plugin;
 		this._db = new CommandTrackerDatabase((this.app as CustomApp).appId);
+		this._db.open();
 	}
 
 	display(): void {
@@ -120,7 +121,7 @@ export class SettingTab extends PluginSettingTab {
 					.setButtonText('Delete')
 					.setDisabled(true)
 					.onClick(async () => {
-						await this._db.delete();
+						await this._db.deleteAllRecords();
 						this.display();
 					});
 				},

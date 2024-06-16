@@ -4,8 +4,8 @@ import { around } from 'monkey-around'
 import { App, Platform, Plugin } from 'obsidian';
 import { DEFAULT_SETTINGS, SettingTab, Settings } from './settings';
 import { CustomApp, CommandPalettePluginInstance, Command, PluginInstance } from './types';
-import { CommandTrackerDatabase } from './database';
 import { CommandTrackerView, VIEW_TYPE_COMMAND_TRACKER } from './view';
+import { CommandTrackerDatabase } from './database';
 
 dayjs.extend(customParseFormat);
 
@@ -49,8 +49,9 @@ export default class CommandTracker extends Plugin {
 		this._settingTab = new SettingTab(this.app, this);
 		this.addSettingTab(this._settingTab);
 
-		this.app.workspace.onLayoutReady(() => {
+		this.app.workspace.onLayoutReady(async () => {
 			this._db = new CommandTrackerDatabase((this.app as CustomApp).appId);
+			await this._db.open();
 			const handlingDatabase = this.handlingDatabase.bind(this);
 			this._uninstallWrapper.executeCommand = around((this.app as CustomApp).commands, {
 				executeCommand(orgMethod): (command: Command, ev: Event) => boolean {
@@ -75,7 +76,7 @@ export default class CommandTracker extends Plugin {
 		});
 	}
 
-	onunload() {
+	async onunload() {
 		if (this._uninstallWrapper.executeCommand) {
 			this._uninstallWrapper.executeCommand();
 			this._uninstallWrapper.executeCommand = undefined;
@@ -87,7 +88,7 @@ export default class CommandTracker extends Plugin {
 		if (Platform.isDesktopApp && this.settings.isProtectData) {
 			this._db.close();
 		} else {
-			this._db.delete();
+			await this._db.deleteDatabase();
 		}
 	}
 
@@ -107,37 +108,38 @@ export default class CommandTracker extends Plugin {
 		if (this.settings.stopTracing) {
 			return;
 		}
+
 		await this.deleteRecords();
 		await this.registerRecord(command, runType);
 	}
 
 	private async deleteRecords(): Promise<void> {
-		const records = await this._db.commands.toArray();
-		if (records.length > MAXIMUM_RECORDS) {
+		const records = await this._db.getAll();
+		if (records.length >= MAXIMUM_RECORDS) {
 			const referenceUid = records.length - MAXIMUM_RECORDS + (records[0].uid ?? 0);
-			await this._db.commands.where('uid').below(referenceUid).delete();
+			await this._db.deleteExceededRecords(referenceUid);
 		}
 		const referenceDate = parseInt(dayjs().subtract(RETENTION_PERIOD, 'd').format('YYYYMMDD'), 10);
-		await this._db.commands.where('date').below(referenceDate).delete();
+		await this._db.deleteOverdueRecords(referenceDate);
 	}
 
 	private async registerRecord(command: Command, runType: RunType): Promise<void> {
-		const date = dayjs().format('YYYY/MM/DD');
-		const usedCommands = await this._db.commands.where('date').equals(date).and(({ id }) => id === command.id).toArray();
+		const date = parseInt(dayjs().format('YYYYMMDD'), 10);
+		const usedCommands = await this._db.searchSameDateAndId(date, command.id);
 		const usedCommand = usedCommands.length ? usedCommands[0] : null;
 		if (usedCommand) {
 			const { uid = 0, hotkeyCount = 0, cmdPaletteCount = 0 } = usedCommand;
 			if (runType === RUN_TYPE.hotkey) {
-				this._db.commands.update(uid, { hotkeyCount: hotkeyCount + 1 });
+				await this._db.update(uid, { hotkeyCount: hotkeyCount + 1 });
 			} else {
-				this._db.commands.update(uid, { cmdPaletteCount: cmdPaletteCount + 1 });
+				await this._db.update(uid, { cmdPaletteCount: cmdPaletteCount + 1 });
 			}
 		} else {
 			const counts = {
 				hotkeyCount: runType === RUN_TYPE.hotkey ? 1 : 0,
 				cmdPaletteCount: runType === RUN_TYPE.cmdPalette ? 1 : 0,
 			};
-			this._db.commands.add({ id: command.id, date, ...counts });
+			await this._db.add({ id: command.id, date, ...counts });
 		}
 	}
 }

@@ -15,11 +15,11 @@ const compareName = (a: { [key: string]: string | number }, b: { [key: string]: 
 	return a.command.localeCompare(b.command);
 };
 
-const compareDate = (selectedDate: Date, cellValue: string): number => {
+const compareDate = (selectedDate: Date, cellValue: number): number => {
 	if (cellValue == null) {
 		return -1;
 	}
-	const cellDate = dayjs(cellValue, 'YYYY/MM/DD');
+	const cellDate = dayjs(`${cellValue}`, 'YYYYMMDD');
 	const referDate = dayjs(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate()));
 	if (cellDate.isBefore(referDate)) {
 		return -1;
@@ -59,14 +59,17 @@ export class CommandTrackerView extends ItemView {
 		this.containerEl.empty();
 		this.containerEl.addClass('ct-view-content');
 
-		this._records = await this._db.commands.toArray();
+		await this._db.open();
+		this._records = await this._db.getAll();
 		this.generateHeader();
 		const tableEl = this.containerEl.createDiv('ag-theme-quartz ct-table');
 		const gridOptions = {
 			onCellClicked: (event: CellClickedEvent) => {
 				if (navigator.clipboard) {
 					const value = event.column.getColDef().field === 'date' ? this.formatDate({ value: event.value }) : event.value;
-					navigator.clipboard.writeText(value).then(() => new Notice('Copied the cell value.'));
+					if (value) {
+						navigator.clipboard.writeText(value).then(() => new Notice('Copied the cell value.'));
+					}
 				}
 			}
 		}
@@ -117,7 +120,7 @@ export class CommandTrackerView extends ItemView {
 				div.createEl('button', '', button => {
 					button.setText('Reload');
 					button.onclick = async (): Promise<void> => {
-						this._records = await this._db.commands.toArray();
+						this._records = await this._db.getAll();
 						this._viewType === VIEW_TYPE.perCmd ? this.displayRecordsPerCommand() : this.displayRecordsPerCommandAndDaily();
 					};
 				});
@@ -180,7 +183,7 @@ export class CommandTrackerView extends ItemView {
 			{ 
 				headerName: this._viewType === VIEW_TYPE.perCmd ? 'Date of last use' : 'Date of use',
 				field: 'date',
-				filter: Platform.isDesktopApp ? 'agDateColumnFilter' : true,
+				filter: Platform.isDesktopApp ? 'agDateColumnFilter' : 'agTextColumnFilter',
 				floatingFilter: true,
 				filterParams: {
 					buttons: ['clear'],
@@ -326,16 +329,16 @@ export class CommandTrackerView extends ItemView {
 				return false;
 		}
 	}
-	private formatDate(p: { value: string }): string {
-		const date = p.value;
+	private formatDate(p: { value: number }): string {
+		const date = p.value ? `${p.value}` : '';
 		switch (this._settings.dateFormat) {
 			case DATE_FORMAT.mmddyyyy:
-				return date ? `${date.slice(5, 8)}${date.slice(8)}/${date.slice(0, 4)}` : '';
+				return date ? `${date.slice(4, 6)}/${date.slice(6)}/${date.slice(0, 4)}` : '';
 			case DATE_FORMAT.ddmmyyyy:
-				return date ? `${date.slice(8)}/${date.slice(5, 8)}${date.slice(0, 4)}` : '';
+				return date ? `${date.slice(6)}/${date.slice(4, 6)}/${date.slice(0, 4)}` : '';
 			case DATE_FORMAT.yyyymmdd:
 			default:
-				return date;
+				return date ? `${date.slice(0, 4)}/${date.slice(4, 6)}/${date.slice(6)}` : '';
 		}
 	}
 }
