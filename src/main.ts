@@ -85,7 +85,7 @@ export default class CommandTracker extends Plugin {
 			this._uninstallWrapper.onChooseItem();
 			this._uninstallWrapper.onChooseItem = undefined;
 		}
-		if (Platform.isDesktopApp && this.settings.isProtectData) {
+		if (Platform.isDesktopApp && this.settings.viewCommandTracker.isProtectData) {
 			this._db.close();
 		} else {
 			await this._db.deleteDatabase();
@@ -105,7 +105,7 @@ export default class CommandTracker extends Plugin {
 	}
 
 	private async handlingDatabase(command: Command, runType: RunType): Promise<void> {
-		if (this.settings.stopTracing) {
+		if (this.settings.viewCommandTracker.stopTracing) {
 			return;
 		}
 

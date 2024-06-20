@@ -3,11 +3,19 @@ import CommandTracker from './main';
 import { CommandTrackerDatabase } from './database';
 import { CustomApp } from './types';
 
-export interface Settings {
+const SETTING_TYPE = {
+	viewCommandTracker: 'viewCommandTracker',
+} as const;
+
+export interface ViewCommandTrackerSettings {
 	viewType: string;
 	dateFormat: string;
 	isProtectData: boolean;
 	stopTracing: boolean;
+}
+
+export interface Settings {
+	[SETTING_TYPE.viewCommandTracker]: ViewCommandTrackerSettings;
 }
 
 export const VIEW_TYPE: Record<string, string> = {
@@ -21,11 +29,15 @@ export const DATE_FORMAT: Record<string, string> = {
 	ddmmyyyy: 'dd/mm/yyyy',
 };
 
-export const DEFAULT_SETTINGS: Settings = {
+const VIEW_COMMAND_TRACKER_DEFAULT_SETTINGS = {
 	viewType: VIEW_TYPE.perCmd,
 	dateFormat: DATE_FORMAT.yyyymmdd,
 	isProtectData: false,
 	stopTracing: false,
+} as const;
+
+export const DEFAULT_SETTINGS: Settings = {
+	[SETTING_TYPE.viewCommandTracker]: VIEW_COMMAND_TRACKER_DEFAULT_SETTINGS,
 } as const;
 
 const DELETION_CONFIRMATION_TEXT = 'Delete';
@@ -49,56 +61,75 @@ export class SettingTab extends PluginSettingTab {
 		containerEl.createEl('h2').setText('Command Tracker - Settings');
 		containerEl.addClass('ct-settings');
 
+		this.setForViewCommandTrackerCommand(containerEl);
+	}
+
+	private setForViewCommandTrackerCommand(containerEl: HTMLElement): void {
+		const settingType = SETTING_TYPE.viewCommandTracker;
+		const settings = this.plugin.settings[settingType];
+
 		new Setting(containerEl)
 			.setName(`Initial view type`)
 			.setDesc(`Select the initial view type for the table.`)
 			.addDropdown(item => item
 				.addOptions(Object.values(VIEW_TYPE).reduce((obj, v) => (obj[v] = v, obj), {} as typeof VIEW_TYPE))
-				.setValue(this.plugin.settings.viewType)
+				.setValue(settings.viewType)
 				.onChange(async value => {
-					this.plugin.settings.viewType = value;
+					settings.viewType = value;
 					await this.plugin.saveData(this.plugin.settings);
 				}),
 			)
-			.then(settingEl => this.addResetButton(settingEl, 'viewType'));
+			.then(settingEl => {
+				const setDefaultValue = () => settings.viewType = DEFAULT_SETTINGS[settingType].viewType;
+				this.addResetButton(settingEl, setDefaultValue);
+			});
 
 		new Setting(containerEl)
 			.setName(`Date format`)
 			.setDesc(`Select the date format for the cells.`)
 			.addDropdown(item => item
 				.addOptions(Object.values(DATE_FORMAT).reduce((obj, v) => (obj[v] = v, obj), {} as typeof DATE_FORMAT))
-				.setValue(this.plugin.settings.dateFormat)
+				.setValue(settings.dateFormat)
 				.onChange(async value => {
-					this.plugin.settings.dateFormat = value;
+					settings.dateFormat = value;
 					await this.plugin.saveData(this.plugin.settings);
 				}),
 			)
-			.then(settingEl => this.addResetButton(settingEl, 'dateFormat'));
+			.then(settingEl => {
+				const setDefaultValue = () => settings.dateFormat = DEFAULT_SETTINGS[settingType].dateFormat;
+				this.addResetButton(settingEl, setDefaultValue);
+			});
 			
 		new Setting(containerEl)
 			.setName(`Stop tracking`)
 			.setDesc(`When enabled, stop tracking and not write to DB. Data of before stop isn't deleted.`)
 			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.stopTracing)
+				.setValue(settings.stopTracing)
 				.onChange(async value => {
-					this.plugin.settings.stopTracing = value;
+					settings.stopTracing = value;
 					await this.plugin.saveData(this.plugin.settings);
 				}),
 			)
-			.then(settingEl => this.addResetButton(settingEl, 'viewType'));
+			.then(settingEl => {
+				const setDefaultValue = () => settings.stopTracing = DEFAULT_SETTINGS[settingType].stopTracing;
+				this.addResetButton(settingEl, setDefaultValue);
+			});
 
 		if (Platform.isDesktopApp) {
 			new Setting(containerEl)
 				.setName(`Protect data when plugin updated, disabled, or uninstall`)
 				.setDesc(`When enabled, protect all data of “Command Tracker” when plugin updated, disabled, or uninstall.`)
 				.addToggle(toggle => toggle
-					.setValue(this.plugin.settings.isProtectData)
+					.setValue(settings.isProtectData)
 					.onChange(async value => {
-						this.plugin.settings.isProtectData = value;
+						settings.isProtectData = value;
 						await this.plugin.saveData(this.plugin.settings);
 					}),
 				)
-				.then(settingEl => this.addResetButton(settingEl, 'isProtectData'));
+				.then(settingEl => {
+					const setDefaultValue = () => settings.isProtectData = DEFAULT_SETTINGS[settingType].isProtectData;
+					this.addResetButton(settingEl, setDefaultValue);
+				});
 		}
 
 		new Setting(containerEl)
@@ -149,18 +180,18 @@ export class SettingTab extends PluginSettingTab {
 		});
 	}
 
-	private addResetButton(settingEl: Setting, settingKey: keyof typeof DEFAULT_SETTINGS, refreshView = true): void {
+	private addResetButton(settingEl: Setting, setDefaultValue: () => void, refreshView = true): void {
         settingEl
             .addExtraButton(button => button
 				.setIcon('reset')
 				.setTooltip('Reset to default')
 				.onClick(async () => {
-					const settingValue = DEFAULT_SETTINGS[settingKey];
-					(this.plugin.settings[settingKey] as typeof settingValue) = settingValue;
+					setDefaultValue();
 					await this.plugin.saveSettings();
 					if (refreshView) {
 						this.display();
 					}
-				}));
+				}),
+			);
 	}
 }

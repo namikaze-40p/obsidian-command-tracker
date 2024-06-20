@@ -4,7 +4,7 @@ import { CellClickedEvent, ColDef, ColGroupDef, GridApi, ITextFilterParams, Text
 import { ItemView, Notice, Platform, Setting, WorkspaceLeaf } from 'obsidian';
 import { CommandTrackerDatabase, IHotkey } from './database';
 import { CustomApp, Command, ViewType } from './types';
-import { DATE_FORMAT, Settings, VIEW_TYPE } from './settings';
+import { DATE_FORMAT, Settings, VIEW_TYPE, ViewCommandTrackerSettings } from './settings';
 
 export const VIEW_TYPE_COMMAND_TRACKER = 'command-tracker-view';
 
@@ -36,6 +36,10 @@ export class CommandTrackerView extends ItemView {
 	private _records: IHotkey[] = [];
 	private _viewType: ViewType = VIEW_TYPE.perCmd;
 	private _gridApi: GridApi;
+
+	private get _viewSettings(): ViewCommandTrackerSettings {
+		return this._settings.viewCommandTracker;
+	}
 
 	constructor(leaf: WorkspaceLeaf, settings: Settings) {
 		super(leaf);
@@ -75,7 +79,7 @@ export class CommandTrackerView extends ItemView {
 		}
 		this._gridApi = createGrid(tableEl, gridOptions);
 
-		if (this._settings.viewType === VIEW_TYPE.perCmd) {
+		if (this._viewSettings.viewType === VIEW_TYPE.perCmd) {
 			this.displayRecordsPerCommand();
 		} else {
 			this.displayRecordsPerCommandAndDaily();
@@ -130,7 +134,7 @@ export class CommandTrackerView extends ItemView {
 				.setName(`Specify view type`)
 				.addDropdown(dropdown => dropdown
 					.addOptions({ [VIEW_TYPE.perCmd]: VIEW_TYPE.perCmd, [VIEW_TYPE.perCmdAndDay]: VIEW_TYPE.perCmdAndDay })
-					.setValue(this._settings.viewType)
+					.setValue(this._viewSettings.viewType)
 					.onChange((value: ViewType) => {
 						this._viewType = value;
 						value === VIEW_TYPE.perCmd ? this.displayRecordsPerCommand() : this.displayRecordsPerCommandAndDaily();
@@ -192,7 +196,7 @@ export class CommandTrackerView extends ItemView {
 							comparator: compareDate,
 						}
 						: {
-							filterPlaceholder: this._settings.dateFormat,
+							filterPlaceholder: this._viewSettings.dateFormat,
 							textMatcher: this.isMatchDate.bind(this),
 						}),
 				} as ITextFilterParams,
@@ -331,7 +335,7 @@ export class CommandTrackerView extends ItemView {
 	}
 	private formatDate(p: { value: number }): string {
 		const date = p.value ? `${p.value}` : '';
-		switch (this._settings.dateFormat) {
+		switch (this._viewSettings.dateFormat) {
 			case DATE_FORMAT.mmddyyyy:
 				return date ? `${date.slice(4, 6)}/${date.slice(6)}/${date.slice(0, 4)}` : '';
 			case DATE_FORMAT.ddmmyyyy:
