@@ -252,6 +252,7 @@ export class CommandTrackerView extends ItemView {
 	}
 
 	private generateRecordsPerCommand(): { [key: string]: string | number | undefined }[] {
+		const dateFormat = this._viewSettings.dateFormat.toUpperCase();
 		return this._records.reduce((acc, cur) => {
 			const row = acc.find(row => row.id === cur.id);
 			if (!row) {
@@ -259,7 +260,9 @@ export class CommandTrackerView extends ItemView {
 			}
 			if (row.date) {
 				if (cur.date) {
-					row.date = dayjs(cur.date, 'YYYY/MM/DD').isAfter(dayjs(row.date, 'YYYY/MM/DD')) ? cur.date : row.date;
+					const curDate = this.formatDate({ value: cur.date });
+					const rowDate = this.formatDate({ value: row.date as number });
+					row.date = dayjs(curDate, dateFormat).isAfter(dayjs(rowDate, dateFormat)) ? cur.date : row.date;
 				}
 				row.hotkeyCount = (row.hotkeyCount as number) + (cur.hotkeyCount ?? 0);
 				row.cmdPaletteCount = (row.cmdPaletteCount as number) + (cur.cmdPaletteCount ?? 0);
