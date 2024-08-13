@@ -122,7 +122,7 @@ export class CommandTrackerView extends ItemView {
 			el.createDiv('ct-first-line', div => {
 				div.createEl('h6', { text: 'Command Tracker View' });
 				div.createEl('button', '', button => {
-					button.setText('Reload');
+					button.setText('Refresh');
 					button.onclick = async (): Promise<void> => {
 						this._records = await this._db.getAll();
 						this._viewType === VIEW_TYPE.perCmd ? this.displayRecordsPerCommand() : this.displayRecordsPerCommandAndDaily();
