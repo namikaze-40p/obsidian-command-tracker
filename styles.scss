@@ -29,6 +29,11 @@ body.theme-dark .ag-theme-quartz {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+
+		> button:active:hover {
+			position: relative;
+			top: 2px;
+		}
 	}
 
 	& .ct-view-selector {
