@@ -11,7 +11,7 @@ export interface ViewCommandTrackerSettings {
 	viewType: string;
 	dateFormat: string;
 	isProtectData: boolean;
-	stopTracing: boolean;
+	isStopTracing: boolean;
 	version: string;
 }
 
@@ -34,7 +34,7 @@ const VIEW_COMMAND_TRACKER_DEFAULT_SETTINGS = {
 	viewType: VIEW_TYPE.perCmd,
 	dateFormat: DATE_FORMAT.yyyymmdd,
 	isProtectData: false,
-	stopTracing: false,
+	isStopTracing: false,
 	version: '',
 } as const;
 
@@ -106,14 +106,14 @@ export class SettingTab extends PluginSettingTab {
 			.setName(`Stop tracking`)
 			.setDesc(`When enabled, stop tracking and not write to DB. Data of before stop isn't deleted.`)
 			.addToggle(toggle => toggle
-				.setValue(settings.stopTracing)
+				.setValue(settings.isStopTracing)
 				.onChange(async value => {
-					settings.stopTracing = value;
+					settings.isStopTracing = value;
 					await this.plugin.saveData(this.plugin.settings);
 				}),
 			)
 			.then(settingEl => {
-				const setDefaultValue = () => settings.stopTracing = DEFAULT_SETTINGS[settingType].stopTracing;
+				const setDefaultValue = () => settings.isStopTracing = DEFAULT_SETTINGS[settingType].isStopTracing;
 				this.addResetButton(settingEl, setDefaultValue);
 			});
 

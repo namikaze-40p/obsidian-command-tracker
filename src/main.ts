@@ -108,7 +108,7 @@ export default class CommandTracker extends Plugin {
 	}
 
 	private async handlingDatabase(command: Command, runType: RunType): Promise<void> {
-		if (this.settings.viewCommandTracker.stopTracing) {
+		if (this.settings.viewCommandTracker.isStopTracing) {
 			return;
 		}
 
