@@ -36,9 +36,7 @@ You can check the date of last use of each command and how much times each comma
 > - Data of “Command Tracker” is deleted in the following cases.
 >   - All data is deleted in the following cases.
 >     - When the "Delete all data" operation in the settings.
->     - When this plugin is updated.
->     - When this plugin is disabled.
->     - When this plugin is uninstalled.
+>     - When this plugin is updated, disabled or uninstalled. (You can protect data in the settings.)
 >   - Some data is deleted in the following cases.
 >     - When the number of records exceeds 2000 lines and a new record is written, the oldest record is deleted.
 >     - When a new record is written, records exceeding 60 days from the date of use are deleted.
