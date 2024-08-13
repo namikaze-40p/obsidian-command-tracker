@@ -64,6 +64,25 @@ body.is-phone .ct-view-content {
 	}
 }
 
+.ct-modal {
+	.modal-content {
+		display: flex;
+		flex-direction: column;
+		padding: 1rem 0.5rem 0;
+		gap: 0.5rem;
+
+		h4 {
+			margin-top: 0;
+		}
+
+		.ct-buttons {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.5rem;
+		}
+	}
+}
+
 .ct-settings {
 	& .ct-delete-input {
 		width: 5rem;

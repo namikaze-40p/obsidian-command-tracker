@@ -12,6 +12,7 @@ export interface ViewCommandTrackerSettings {
 	dateFormat: string;
 	isProtectData: boolean;
 	stopTracing: boolean;
+	version: string;
 }
 
 export interface Settings {
@@ -34,6 +35,7 @@ const VIEW_COMMAND_TRACKER_DEFAULT_SETTINGS = {
 	dateFormat: DATE_FORMAT.yyyymmdd,
 	isProtectData: false,
 	stopTracing: false,
+	version: '',
 } as const;
 
 export const DEFAULT_SETTINGS: Settings = {

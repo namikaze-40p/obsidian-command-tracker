@@ -6,6 +6,7 @@ import { DEFAULT_SETTINGS, SettingTab, Settings } from './settings';
 import { CustomApp, CommandPalettePluginInstance, Command, PluginInstance } from './types';
 import { CommandTrackerView, VIEW_TYPE_COMMAND_TRACKER } from './view';
 import { CommandTrackerDatabase } from './database';
+import { ConfirmReloadModal } from './confirm-reload-modal';
 
 dayjs.extend(customParseFormat);
 
@@ -74,6 +75,8 @@ export default class CommandTracker extends Plugin {
 				});
 			}
 		});
+
+		this.saveCurrentVersionNumber();
 	}
 
 	async onunload() {
@@ -140,6 +143,22 @@ export default class CommandTracker extends Plugin {
 				cmdPaletteCount: runType === RUN_TYPE.cmdPalette ? 1 : 0,
 			};
 			await this._db.add({ id: command.id, date, ...counts });
+		}
+	}
+
+	private saveCurrentVersionNumber() {
+		const currentVersion = this.manifest.version;
+		const knownVersion = this.settings.viewCommandTracker.version;
+
+		if (knownVersion) {
+			if (currentVersion !== knownVersion) {
+				this.settings.viewCommandTracker.version = currentVersion;
+				this.saveSettings();
+				new ConfirmReloadModal(this.app).open();
+			}
+		} else {
+			this.settings.viewCommandTracker.version = currentVersion;
+			this.saveSettings();
 		}
 	}
 }
