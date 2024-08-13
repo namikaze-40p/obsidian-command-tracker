@@ -6,5 +6,5 @@
 	"description": "Track the number of times the command is used.",
 	"author": "namikaze-40p",
 	"authorUrl": "https://github.com/namikaze-40p",
-	"isDesktopOnly": false
+	"isDesktopOnly": true
 }
