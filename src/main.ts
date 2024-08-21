@@ -111,7 +111,6 @@ export default class CommandTracker extends Plugin {
 		if (this.settings.viewCommandTracker.isStopTracing) {
 			return;
 		}
-
 		await this.deleteRecords();
 		await this.registerRecord(command, runType);
 	}
@@ -149,7 +148,6 @@ export default class CommandTracker extends Plugin {
 	private saveCurrentVersionNumber() {
 		const currentVersion = this.manifest.version;
 		const knownVersion = this.settings.viewCommandTracker.version;
-
 		if (knownVersion) {
 			if (currentVersion !== knownVersion) {
 				this.settings.viewCommandTracker.version = currentVersion;
