@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-command-tracker",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "This is an Obsidian plugin which tracks the number of times the command is used.",
 	"main": "main.js",
 	"scripts": {
