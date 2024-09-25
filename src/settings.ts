@@ -60,7 +60,6 @@ export class SettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl('h2').setText('Command Tracker - Settings');
 		containerEl.addClass('ct-settings');
 
 		this.setForViewCommandTrackerCommand(containerEl);
