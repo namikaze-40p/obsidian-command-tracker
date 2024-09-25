@@ -120,7 +120,7 @@ export class CommandTrackerView extends ItemView {
 	private generateHeader(): void {
 		this.containerEl.createDiv('ct-view-header', el => {
 			el.createDiv('ct-first-line', div => {
-				div.createEl('h6', { text: 'Command Tracker View' });
+				div.createEl('h6', { text: 'Command tracker view' });
 				div.createEl('button', '', button => {
 					button.setText('Refresh');
 					button.onclick = async (): Promise<void> => {
