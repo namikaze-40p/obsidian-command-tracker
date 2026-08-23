@@ -73,7 +73,7 @@ export class SettingTab extends PluginSettingTab {
     super(app, _plugin);
 
     this._db = new CommandTrackerDatabase((this.app as CustomApp).appId);
-    this._db.open();
+    this._db.open().catch((error) => console.error(error));
   }
 
   display(): void {

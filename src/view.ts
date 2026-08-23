@@ -255,15 +255,18 @@ export class CommandTrackerView extends ItemView {
   }
 
   private refreshData(): void {
-    this._db.getAll().then((data) => {
-      this._records = data;
-      if (this._viewType === VIEW_TYPE.perCmd) {
-        this.displayRecordsPerCommand();
-      } else {
-        this.displayRecordsPerCommandAndDaily();
-      }
-      new Notice('The view data has been refreshed.');
-    });
+    this._db
+      .getAll()
+      .then((data) => {
+        this._records = data;
+        if (this._viewType === VIEW_TYPE.perCmd) {
+          this.displayRecordsPerCommand();
+        } else {
+          this.displayRecordsPerCommandAndDaily();
+        }
+        new Notice('The view data has been refreshed.');
+      })
+      .catch((error) => console.error(error));
   }
 
   private resetGrid(): void {
@@ -281,9 +284,12 @@ export class CommandTrackerView extends ItemView {
       return;
     }
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(csv).then(() => {
-        new Notice('Copied the view data as CSV to clipboard.');
-      });
+      navigator.clipboard
+        .writeText(csv)
+        .then(() => {
+          new Notice('Copied the view data as CSV to clipboard.');
+        })
+        .catch((error) => console.error(error));
     }
   }
 
@@ -358,7 +364,10 @@ export class CommandTrackerView extends ItemView {
               ? this.formatDate({ value: event.value })
               : event.value;
           if (value) {
-            navigator.clipboard.writeText(value).then(() => new Notice('Copied the cell value.'));
+            navigator.clipboard
+              .writeText(value)
+              .then(() => new Notice('Copied the cell value.'))
+              .catch((error) => console.error(error));
           }
         }
       },

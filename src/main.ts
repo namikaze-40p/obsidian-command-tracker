@@ -54,7 +54,9 @@ export default class CommandTracker extends Plugin {
       this._uninstallWrapper.executeCommand = around((this.app as CustomApp).commands, {
         executeCommand(orgMethod): (command: Command, ev: Event) => boolean {
           return (command: Command, ev: Event) => {
-            handlingDatabase(command, RUN_TYPE.hotkey);
+            handlingDatabase(command, RUN_TYPE.hotkey).catch((error: unknown) =>
+              console.error(error),
+            );
             return orgMethod && orgMethod.call(this, command, ev);
           };
         },
@@ -68,7 +70,9 @@ export default class CommandTracker extends Plugin {
         this._uninstallWrapper.onChooseItem = around(commandPalette.modal, {
           onChooseItem(orgMethod): (command: Command, ev: Event) => boolean {
             return function (command: Command, ev: Event): boolean {
-              handlingDatabase(command, RUN_TYPE.cmdPalette);
+              handlingDatabase(command, RUN_TYPE.cmdPalette).catch((error: unknown) =>
+                console.error(error),
+              );
               return orgMethod ? orgMethod.call(this, command, ev) : true;
             };
           },
@@ -76,7 +80,7 @@ export default class CommandTracker extends Plugin {
       }
     });
 
-    this.saveCurrentVersionNumber();
+    await this.saveCurrentVersionNumber();
   }
 
   async onunload(): Promise<void> {
