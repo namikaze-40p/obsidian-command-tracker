@@ -29,8 +29,8 @@ export type Command = {
     key: string;
     modifiers: string[];
   };
-  callback?: () => any;
-  editorCallback?: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => any;
+  callback?: () => void;
+  editorCallback?: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => void;
   checkCallback?: (
     checking: boolean,
     editor: Editor,
