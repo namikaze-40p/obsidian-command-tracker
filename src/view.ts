@@ -304,9 +304,9 @@ export class CommandTrackerView extends ItemView {
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.body.createEl('a', {
+      cls: 'ct-hidden-link',
       attr: { href: url, download: fileName },
     });
-    link.style.visibility = 'hidden';
     link.click();
     document.body.removeChild(link);
   }
