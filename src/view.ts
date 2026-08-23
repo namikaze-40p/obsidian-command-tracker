@@ -249,7 +249,7 @@ export class CommandTrackerView extends ItemView {
             document.removeEventListener('click', closePopup);
           }
         };
-        setTimeout(() => document.addEventListener('click', closePopup), 0);
+        window.setTimeout(() => document.addEventListener('click', closePopup), 0);
       };
     });
   }
