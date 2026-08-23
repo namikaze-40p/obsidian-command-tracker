@@ -227,7 +227,7 @@ export class CommandTrackerView extends ItemView {
           items.push({
             label: 'Export as CSV',
             icon: 'download',
-            action: async () => await this.exportCSV(),
+            action: () => this.exportCSV(),
           });
         }
 
@@ -293,7 +293,7 @@ export class CommandTrackerView extends ItemView {
     }
   }
 
-  private async exportCSV(): Promise<void> {
+  private exportCSV(): void {
     const csv = this._gridApi.getDataAsCsv();
     if (!csv) {
       new Notice('Failed to export the view data as CSV file.');
