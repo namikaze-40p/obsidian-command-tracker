@@ -30,7 +30,11 @@ export default class CommandTracker extends Plugin {
     onChooseItem?: () => void;
   } = {};
 
-  async onload(): Promise<void> {
+  onload(): void {
+    this.onloadAsync().catch((error: unknown) => console.error(error));
+  }
+
+  private async onloadAsync(): Promise<void> {
     await this.loadSettings();
 
     this.registerView(
@@ -83,7 +87,11 @@ export default class CommandTracker extends Plugin {
     await this.saveCurrentVersionNumber();
   }
 
-  async onunload(): Promise<void> {
+  onunload(): void {
+    this.onunloadAsync().catch((error: unknown) => console.error(error));
+  }
+
+  private async onunloadAsync(): Promise<void> {
     if (this._uninstallWrapper.executeCommand) {
       this._uninstallWrapper.executeCommand();
       this._uninstallWrapper.executeCommand = undefined;
