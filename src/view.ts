@@ -405,7 +405,7 @@ export class CommandTrackerView extends ItemView {
         floatingFilter: true,
         filterParams: {
           buttons: ['clear'],
-        } as ITextFilterParams,
+        } satisfies ITextFilterParams,
         flex: 5,
         minWidth: 280,
         suppressMovable: true,
@@ -417,7 +417,7 @@ export class CommandTrackerView extends ItemView {
         floatingFilter: true,
         filterParams: {
           buttons: ['clear'],
-        } as ITextFilterParams,
+        } satisfies ITextFilterParams,
         flex: 2,
         minWidth: 120,
         suppressMovable: true,
@@ -438,7 +438,7 @@ export class CommandTrackerView extends ItemView {
                 filterPlaceholder: this._viewSettings.dateFormat,
                 textMatcher: this.isMatchDate.bind(this),
               }),
-        } as ITextFilterParams,
+        } satisfies ITextFilterParams,
         valueFormatter: this.formatDate.bind(this),
         flex: 2,
         minWidth: 160,
@@ -457,7 +457,7 @@ export class CommandTrackerView extends ItemView {
             floatingFilter: true,
             filterParams: {
               buttons: ['clear'],
-            } as ITextFilterParams,
+            } satisfies ITextFilterParams,
             width: 110,
             valueGetter: (p) => (p.data.hotkeyCount ?? 0) + (p.data.cmdPaletteCount ?? 0),
             suppressMovable: true,
@@ -470,7 +470,7 @@ export class CommandTrackerView extends ItemView {
             floatingFilter: true,
             filterParams: {
               buttons: ['clear'],
-            } as ITextFilterParams,
+            } satisfies ITextFilterParams,
             width: 110,
             suppressMovable: true,
             hide: this._hiddenColumns.includes('hotkeyCount'),
@@ -482,7 +482,7 @@ export class CommandTrackerView extends ItemView {
             floatingFilter: true,
             filterParams: {
               buttons: ['clear'],
-            } as ITextFilterParams,
+            } satisfies ITextFilterParams,
             width: 170,
             suppressMovable: true,
             hide: this._hiddenColumns.includes('cmdPaletteCount'),
