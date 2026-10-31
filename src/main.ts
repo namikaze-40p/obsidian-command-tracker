@@ -100,9 +100,11 @@ export default class CommandTracker extends Plugin {
       this._uninstallWrapper.onChooseItem();
       this._uninstallWrapper.onChooseItem = undefined;
     }
-    if (Platform.isDesktopApp && this.settings.viewCommandTracker?.isProtectData) {
-      this._db.close();
-    } else {
+    if (!this._db) {
+      return;
+    }
+    this._db.close();
+    if (!Platform.isDesktopApp || !this.settings.viewCommandTracker?.isProtectData) {
       await this._db.deleteDatabase();
     }
   }

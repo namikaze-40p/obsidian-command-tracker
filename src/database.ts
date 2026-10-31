@@ -36,7 +36,7 @@ export class CommandTrackerDatabase {
   }
 
   close(): void {
-    this._db.close();
+    this._db?.close();
   }
 
   async deleteDatabase(): Promise<void> {
