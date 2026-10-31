@@ -310,6 +310,7 @@ export class CommandTrackerView extends ItemView {
     });
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 
   private generateViewOptionsSection(el: HTMLDivElement): void {
