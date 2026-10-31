@@ -74,7 +74,7 @@ export class CommandTrackerView extends ItemView {
   private _db: CommandTrackerDatabase;
   private _commandMap = new Map<string, Command & { keys: string[] }>();
   private _records: IHotkey[] = [];
-  private _viewType: ViewType = VIEW_TYPE.perCmd;
+  private _viewType: ViewType;
   private _gridApi: GridApi;
   private _isDarkTheme: boolean;
   private _themeObserver: MutationObserver;
@@ -96,6 +96,7 @@ export class CommandTrackerView extends ItemView {
       hotkeyManager = { bakedIds: [], bakedHotkeys: [] },
     } = this.app as CustomApp;
     this._db = new CommandTrackerDatabase(appId);
+    this._viewType = this._viewSettings.viewType;
     Object.entries(commands.commands).forEach(([key, val]) =>
       this._commandMap.set(key, { ...val, keys: [] }),
     );
@@ -260,11 +261,7 @@ export class CommandTrackerView extends ItemView {
       .getAll()
       .then((data) => {
         this._records = data;
-        if (this._viewType === VIEW_TYPE.perCmd) {
-          this.displayRecordsPerCommand();
-        } else {
-          this.displayRecordsPerCommandAndDaily();
-        }
+        this.displayRecords();
         new Notice('The view data has been refreshed.');
       })
       .catch((error) => console.error(error));
@@ -324,14 +321,10 @@ export class CommandTrackerView extends ItemView {
               [VIEW_TYPE.perCmd]: VIEW_TYPE.perCmd,
               [VIEW_TYPE.perCmdAndDay]: VIEW_TYPE.perCmdAndDay,
             })
-            .setValue(this._viewSettings.viewType)
+            .setValue(this._viewType)
             .onChange((value: ViewType) => {
               this._viewType = value;
-              if (value === VIEW_TYPE.perCmd) {
-                this.displayRecordsPerCommand();
-              } else {
-                this.displayRecordsPerCommandAndDaily();
-              }
+              this.displayRecords();
             }),
         );
 
@@ -377,21 +370,17 @@ export class CommandTrackerView extends ItemView {
       theme: isDarkTheme() ? themeQuartz.withPart(colorSchemeDark) : themeQuartz,
     };
     this._gridApi = createGrid(tableEl, gridOptions);
-    if (this._viewSettings.viewType === VIEW_TYPE.perCmd) {
-      this.displayRecordsPerCommand();
-    } else {
-      this.displayRecordsPerCommandAndDaily();
-    }
+    this.displayRecords();
   }
 
-  private displayRecordsPerCommand(): void {
+  private displayRecords(): void {
     this._gridApi.setGridOption('columnDefs', this.generateColumns());
-    this._gridApi.setGridOption('rowData', this.generateRecordsPerCommand());
-  }
-
-  private displayRecordsPerCommandAndDaily(): void {
-    this._gridApi.setGridOption('columnDefs', this.generateColumns());
-    this._gridApi.setGridOption('rowData', this.generateRecordsPerCommandAndDaily());
+    this._gridApi.setGridOption(
+      'rowData',
+      this._viewType === VIEW_TYPE.perCmd
+        ? this.generateRecordsPerCommand()
+        : this.generateRecordsPerCommandAndDaily(),
+    );
   }
 
   private generateColumns(): (ColDef | ColGroupDef)[] {
