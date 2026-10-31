@@ -57,7 +57,7 @@ export default class CommandTracker extends Plugin {
       const handlingDatabase = this.handlingDatabase.bind(this);
       this._uninstallWrapper.executeCommand = around((this.app as CustomApp).commands, {
         executeCommand(orgMethod): (command: Command, ev: Event) => boolean {
-          return (command: Command, ev: Event) => {
+          return function (command: Command, ev: Event): boolean {
             handlingDatabase(command, RUN_TYPE.hotkey).catch((error: unknown) =>
               console.error(error),
             );
