@@ -25,6 +25,7 @@ export default class CommandTracker extends Plugin {
   settings: Settings;
   private _settingTab: SettingTab;
   private _db: CommandTrackerDatabase;
+  private _recordQueue: Promise<void> = Promise.resolve();
   private _uninstallWrapper: {
     executeCommand?: () => void;
     onChooseItem?: () => void;
@@ -54,7 +55,7 @@ export default class CommandTracker extends Plugin {
     this.app.workspace.onLayoutReady(async () => {
       this._db = new CommandTrackerDatabase((this.app as CustomApp).appId);
       await this._db.open();
-      const handlingDatabase = this.handlingDatabase.bind(this);
+      const enqueueRecord = this.enqueueRecord.bind(this);
       this._uninstallWrapper.executeCommand = around((this.app as CustomApp).commands, {
         executeCommand(orgMethod): (command: Command, ev: Event) => boolean {
           return function (command: Command, ev: Event): boolean {
@@ -63,9 +64,7 @@ export default class CommandTracker extends Plugin {
             const isAvailable = !command.checkCallback || !!command.checkCallback(true);
             const isExecuted = orgMethod && orgMethod.call(this, command, ev);
             if (isAvailable && isExecuted) {
-              handlingDatabase(command, RUN_TYPE.hotkey).catch((error: unknown) =>
-                console.error(error),
-              );
+              enqueueRecord(command, RUN_TYPE.hotkey);
             }
             return isExecuted;
           };
@@ -80,9 +79,7 @@ export default class CommandTracker extends Plugin {
         this._uninstallWrapper.onChooseItem = around(commandPalette.modal, {
           onChooseItem(orgMethod): (command: Command, ev: Event) => boolean {
             return function (command: Command, ev: Event): boolean {
-              handlingDatabase(command, RUN_TYPE.cmdPalette).catch((error: unknown) =>
-                console.error(error),
-              );
+              enqueueRecord(command, RUN_TYPE.cmdPalette);
               return orgMethod ? orgMethod.call(this, command, ev) : true;
             };
           },
@@ -140,6 +137,12 @@ export default class CommandTracker extends Plugin {
     await this.app.workspace
       .getLeaf(true)
       .setViewState({ type: VIEW_TYPE_COMMAND_TRACKER, active: true });
+  }
+
+  private enqueueRecord(command: Command, runType: RunType): void {
+    this._recordQueue = this._recordQueue
+      .then(() => this.handlingDatabase(command, runType))
+      .catch((error: unknown) => console.error(error));
   }
 
   private async handlingDatabase(command: Command, runType: RunType): Promise<void> {
