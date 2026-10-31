@@ -58,10 +58,16 @@ export default class CommandTracker extends Plugin {
       this._uninstallWrapper.executeCommand = around((this.app as CustomApp).commands, {
         executeCommand(orgMethod): (command: Command, ev: Event) => boolean {
           return function (command: Command, ev: Event): boolean {
-            handlingDatabase(command, RUN_TYPE.hotkey).catch((error: unknown) =>
-              console.error(error),
-            );
-            return orgMethod && orgMethod.call(this, command, ev);
+            // executeCommand returns true even when the command is unavailable,
+            // so check availability before running it.
+            const isAvailable = !command.checkCallback || !!command.checkCallback(true);
+            const isExecuted = orgMethod && orgMethod.call(this, command, ev);
+            if (isAvailable && isExecuted) {
+              handlingDatabase(command, RUN_TYPE.hotkey).catch((error: unknown) =>
+                console.error(error),
+              );
+            }
+            return isExecuted;
           };
         },
       });

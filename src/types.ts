@@ -31,11 +31,7 @@ export type Command = {
   };
   callback?: () => void;
   editorCallback?: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => void;
-  checkCallback?: (
-    checking: boolean,
-    editor: Editor,
-    ctx: MarkdownView | MarkdownFileInfo,
-  ) => boolean | void;
+  checkCallback?: (checking: boolean) => boolean | void;
 };
 
 export type PluginInstance = CommandPalettePluginInstance;
