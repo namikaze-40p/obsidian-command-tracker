@@ -45,7 +45,7 @@ export default class CommandTracker extends Plugin {
 
     this.addCommand({
       id: 'view-command-tracker',
-      name: 'View command tracker',
+      name: 'Open view',
       callback: async () => this.viewCommandTracker(),
     });
 

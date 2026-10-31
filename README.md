@@ -13,7 +13,7 @@ You can check the date of last use of each command and how much times each comma
 ## How to use
 
 1. When a command is executed, this plugin records it.
-1. `Command Tracker: View command tracker` command to view recorded information.
+1. Run the `Command Tracker: Open view` command to view the recorded information.
 
 > [!NOTE]
 >
