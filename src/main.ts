@@ -111,12 +111,16 @@ export default class CommandTracker extends Plugin {
 
   async loadSettings(): Promise<void> {
     const loadData = await this.loadData();
+    const viewCommandTracker = {
+      ...DEFAULT_SETTINGS.viewCommandTracker,
+      ...(loadData?.viewCommandTracker || {}),
+    };
     this.settings = {
       ...DEFAULT_SETTINGS,
       ...loadData,
       viewCommandTracker: {
-        ...DEFAULT_SETTINGS.viewCommandTracker,
-        ...(loadData?.viewCommandTracker || {}),
+        ...viewCommandTracker,
+        hiddenColumns: [...viewCommandTracker.hiddenColumns],
       },
     };
     await this.saveSettings();
