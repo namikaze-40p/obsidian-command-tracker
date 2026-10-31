@@ -124,6 +124,7 @@ export class CommandTrackerView extends ItemView {
 
   async onClose(): Promise<void> {
     this._themeObserver.disconnect();
+    this._gridApi?.destroy();
     this._db.close();
   }
 
@@ -354,6 +355,7 @@ export class CommandTrackerView extends ItemView {
   }
 
   private generateGrid(): void {
+    this._gridApi?.destroy();
     this.containerEl.getElementsByClassName('ct-table').item(0)?.remove();
     const tableEl = this.containerEl.createDiv('ct-table');
     const gridOptions = {
