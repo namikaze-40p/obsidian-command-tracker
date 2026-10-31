@@ -9,7 +9,7 @@ export class ConfirmReloadModal extends Modal {
     this.modalEl.addClasses(['confirm-reload-modal', 'ct-modal']);
 
     const titleEl = this.contentEl.createEl('h4');
-    titleEl.setText('"Command Tracker" plugin have been updated.');
+    titleEl.setText('"Command Tracker" plugin has been updated.');
 
     const messageEl = this.contentEl.createEl('span');
     messageEl.setText(
